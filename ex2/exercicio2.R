@@ -1,11 +1,12 @@
 rm(list = ls())
-dev.off()
+# dev.off()
 
 library("corpcor") # usado para função da pseudoinversa
 source("C:\\dev\\rna-2023-2\\utils\\funcoesUteisR.R")
 source("C:\\dev\\rna-2023-2\\utils\\trainadaline.R")
+source("C:\\dev\\rna-2023-2\\utils\\trainperceptron.R")
 
-set.seed(203)
+# set.seed(203)
 
 N <- 200 # numero de amostras de cada classe
 
@@ -64,3 +65,15 @@ w0_g <- W_g[1]
 ygrid_g <- (1 / w2_g) * (- w1_g * xgrid - w0_g)
 
 lines(xgrid, ygrid_g, lwd = 2, col = "purple")
+
+# agora via perceptron
+retlist <- trainperceptron(joinedClasses, Y, 0.1, 0.01, 100, TRUE)
+W_p <- retlist[[1]]
+errorGradient <- retlist[[2]]
+
+w2_p <- W_p[3]
+w1_p <- W_p[2]
+w0_p <- W_p[1]
+ygrid_p <- (1 / w2_p) * (- w1_p * xgrid - w0_p)
+
+lines(xgrid, ygrid_p, lwd = 2, col = "orange")

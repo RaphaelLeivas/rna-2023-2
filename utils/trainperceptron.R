@@ -31,12 +31,15 @@ trainperceptron <- function(
         xseq <- sample(N)
         for (i in 1:N) {
             irand <- xseq[i]
-            yhati <- 1.0 * ((xin[irand, ] %*% wt) >= 0)
+            # yhati <- 1.0 * ((xin[irand, ] %*% wt) >= 0)
+            yhati <- if ((xin[irand, ] %*% wt) >= 0) 1 else -1 # nossa saida Y é -1 ou 1
             ei <- yd[irand] - yhati
             dw <- c(eta) * c(ei) * xin[irand, ] # original: dw <- eta * ei * xin[irand, ]
             wt <- wt + dw
             ei2 <- ei2 + ei * ei
         }
+
+        print(yhati)
 
         nepocas <- nepocas + 1
         evec[nepocas] <- ei2 / N
