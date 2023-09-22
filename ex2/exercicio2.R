@@ -33,7 +33,7 @@ W <- pseudoinverse(X) %*% Y
 # yhatgrid é y chapeu: é a saida aprendida da maquina
 plot(
   NULL,
-  main = "Adaline via pseudoinversa e gradiente",
+  main = "Adaline via pseudoinversa, gradiente e perceptron",
   xlab = "x1",
   ylab = "x2",
   ylim = c(0, 6),
@@ -46,9 +46,11 @@ points(X[(N+1):(2*N), ], lwd = 1, col = "blue")
 # agora define a superficie (plano) de separacao
 xgrid <- seq(from = 0, to = 6, by = 0.1)
 # w2 x2 + w1 x1 + w0 = 0 -> essa e a equaçao do hiperplano de separação
-w2 <- W[1]
-w1 <- W[2]
-w0 <- W[3]
+# cuidado com a ordem dos w dentro do vetor: olha a equação que ele resolveu
+# para identificar quem é
+w2 <- W[2]
+w1 <- W[1]
+w0 <- W[3] # ultimo é o bias por causa da coluna 1 na ultima coluna de X
 ygrid <- (1 / w2) * (- w1 * xgrid - w0)
 
 lines(xgrid, ygrid, lwd = 2, col = "red")
