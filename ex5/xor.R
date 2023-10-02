@@ -8,8 +8,8 @@ set.seed(203)
 
 N <- 100 # numero de observacoes
 n <- 2 # dimensao da entrada
-p <- 5 # numero de neuronios na camada intermediaria
-data <- mlbench.xor(N, n)
+p <- 75 # numero de neuronios na camada intermediaria
+data <- mlbench.spirals(N, n)
 
 # matriz com todos os dados de entrada: tamanho N x 2
 # N observações de 2 dimensoes cada
@@ -48,7 +48,7 @@ xgrid <- seq(from = -1.5, to = 1.5, length.out = gridPoints)
 ygrid <- seq(from = -1.5, to = 1.5, length.out = gridPoints)
 M <- matrix(0, nrow = gridPoints, ncol = gridPoints)
 
-# gera calcula o valor de Y em cada ponto e joga na matriz M
+# calcula o valor de Y em cada ponto e joga na matriz M
 for (i in 1:(gridPoints)) {
   for (j in 1:(gridPoints)) {
     xin <- as.matrix(c(xgrid[i], ygrid[j], 1))
@@ -57,13 +57,29 @@ for (i in 1:(gridPoints)) {
   }
 }
 
+# plot(
+#   NULL,
+#   main = "Espiral",
+#   xlab = "x1",
+#   ylab = "x2",
+#   ylim = c(-1.5, 1.5),
+#   xlim = c(-1.5, 1.5)
+# )
+# 
 # points(X[,1], X[,2], lwd = 2, col = Ycolors)
 # contour(xgrid, ygrid, M, col = "brown", nlevels = 1, lwd = 2, lty = 1, add = TRUE)
 
-filled.contour(xgrid, ygrid, M, nlevels = 0, lwd = 1, lty = 1, xlab = "x1", ylab = "x2", main = "XOR, p = 30",
+filled.contour(xgrid, ygrid, M, nlevels = 0, lwd = 1, lty = 1, xlab = "x1", ylab = "x2",
+               main = if (p == 5) {
+                 "Espiral, p = 5"
+               } else if (p == 10) {
+                 "Espiral, p = 10"
+               } else {
+                 "Espiral, p = 30"
+               },
                col = c("#0000FF33", "#FF000033"), plot.axes = {
                  axis(1)
                  axis(2)
                  contour(xgrid, ygrid, M, nlevels = 0, add = TRUE)
-                 points(X[,1], X[,2], lwd = 2, col = Ycolors)
+                 points(X[,1], X[,2], lwd = 3, col = Ycolors)
                })
