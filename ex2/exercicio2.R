@@ -53,11 +53,11 @@ w1 <- W[1]
 w0 <- W[3] # ultimo é o bias por causa da coluna 1 na ultima coluna de X
 ygrid <- (1 / w2) * (- w1 * xgrid - w0)
 
-lines(xgrid, ygrid, lwd = 2, col = "red")
+# lines(xgrid, ygrid, lwd = 2, col = "red")
 
 # aprende os parametros pelo gradiente descedente
 
-retlist <- trainadaline(joinedClasses, Y, 0.001, 0.01, 1000, TRUE)
+retlist <- trainadaline(joinedClasses, Y, 0.01, 0.01, 1000, TRUE)
 W_g <- retlist[[1]]
 errorGradient <- retlist[[2]]
 
@@ -78,4 +78,4 @@ w1_p <- W_p[2]
 w0_p <- W_p[1]
 ygrid_p <- (1 / w2_p) * (- w1_p * xgrid - w0_p)
 
-lines(xgrid, ygrid_p, lwd = 2, col = "orange")
+# lines(xgrid, ygrid_p, lwd = 2, col = "orange")
