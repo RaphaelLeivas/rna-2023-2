@@ -3,8 +3,8 @@ gera_gaussianas_2classes_2D <- function(N,M,SD){
   # M = vetor com o ponto médio da distribuição. Ex: c(2,2) Para centrar no ponto 2,2
   # SD = dispersão das amostras (a mesma para as duas dimensões)
   
-  xc1<-matrix(rnorm(N),ncol=2)*SD + (matrix(M,ncol=2,nrow=N/2))
-  xc2<-matrix(rnorm(N),ncol=2)*SD + (matrix(M,ncol=2,nrow=N/2))
+  xc1<-matrix(rnorm(N),ncol=2)*SD + (matrix(M,ncol=2,nrow=N/2, byrow = TRUE))
+  xc2<-matrix(rnorm(N),ncol=2)*SD + (matrix(M,ncol=2,nrow=N/2, byrow = TRUE))
   
   y1 = array(1,c(N,1))
   y2 = y1*(-1)
@@ -42,3 +42,8 @@ gera_gaussianas_2classes_2D <- function(N,M,SD){
     
 #   }
 # }
+
+# função radial gaussiana
+pdfnvar <- function(x, m, K, n) {
+  # x
+}
