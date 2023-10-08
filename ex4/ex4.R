@@ -2,6 +2,7 @@ rm(list = ls())
 # dev.off()
 
 library("corpcor") # usado para função da pseudoinversa
+source("C:\\dev\\rna-2023-2\\utils\\rbf.R")
 source("C:\\dev\\rna-2023-2\\utils\\funcoesUteisR.R")
 
 # set.seed(203)
@@ -24,7 +25,7 @@ xClass2_2 <- retlist[[1]]
 
 # cria a matriz X com todos os meus dados de entrada e a coluna de bias
 joinedClasses <- rbind(xClass1_1, xClass1_2, xClass2_1, xClass2_2)
-X <- matrix(cbind(joinedClasses, rep(1, N)), nrow = 2 * N, ncol = 3)
+X <- matrix(cbind(rep(1, N), joinedClasses), nrow = 2 * N, ncol = 3)
 
 # cria a matriz Y com todas as saidas esperadas
 # os primeiros N elementos da classe 1 são Y = 1 (eu defini isso)
@@ -61,62 +62,16 @@ plot(
   xlim = c(-2, 6)
 )
 
-points(Xtrain[, 1], Xtrain[, 2], lwd = 1, col = Ytraincolors)
+points(Xtrain[, 2], Xtrain[, 3], lwd = 1, col = Ytraincolors)
 
 # agora treina a rede RBF
-n <- dim(Xtrain)[2] # correcao pelo bias
-N <- dim(Xtrain)[1] # correcao: total de dados é a qtd de dados de teste
-xclust <- kmeans(Xtrain, p)
-
-# salva centros
-m <- as.matrix(xclust$centers)
-
-# define a matriz de covariancia
-covlist <- list()
-
-for (i in 1:p) {
-  ici <- which(xclust$cluster == i)
-  xci <- Xtrain[ici, ]
-  if (n == 1) {
-    covi <- var(xci)
-  } else {
-    covi <- cov(xci)
-  }
-
-  covlist[[i]] <- covi
-}
-
-# Calcula matriz H
-H <- matrix(nrow = N, ncol = p)
-for (j in 1:N)
-{
-  for (i in 1:p)
-  {
-    mi <- m[i,]
-    covi <- covlist[i]
-    covi <- matrix(unlist(covlist[i]), ncol = n, byrow = T) + 0.001 *  diag(n)
-    H[j, i] <- pdfnvar(Xtrain[j, ], mi, covi, n)
-  }
-}
-
-Haug <- cbind(H, 1)
-W <- pseudoinverse(Haug) %*% Ytrain
+modRBF <- trainRBF(Xtrain, Ytrain, p)
+yhat <- YRBF(Xtrain, modRBF)
 
 # calcula a saida da rede para cada ponto do grid
 gridPoints <- 100
 xgrid <- seq(from = -2, to = 6, length.out = gridPoints)
 ygrid <- seq(from = -2, to = 6, length.out = gridPoints)
-M <- matrix(0, nrow = gridPoints, ncol = gridPoints)
-
-# for (j in 1:N)
-# {
-#   for (i in 1:p)
-#   {
-#     mi <- m[i,]
-#     covi <- covlist[i]
-#     covi <- matrix(unlist(covlist[i]), ncol = n, byrow = T) + 0.001 *  diag(n)
-#     H[j, i] <- pdfnvar(Xtrain[j, ], mi, covi, n)
-#   }
-# }
+Xvalid <- cbind(1, xgrid, ygrid)
 
 
