@@ -7,25 +7,25 @@ source("C:\\dev\\rna-2023-2\\utils\\funcoesUteisR.R")
 
 # set.seed(203)
 
-N <- 200 # numero de amostras de cada classe
+N <- 500 # numero de amostras de cada classe
 n <- 2 # dimensao do espaço de entrada
 p <- 10 # numero de neuronios da camada intermediaria
 
-retlist <- gera_gaussianas_2classes_2D(N / 2, c(0, 0), 0.4)
+retlist <- gera_gaussianas_2classes_2D(N / 2, c(0, 0), 0.5)
 xClass1_1 <- retlist[[1]]
 
-retlist <- gera_gaussianas_2classes_2D(N / 2, c(4, 4), 0.4)
+retlist <- gera_gaussianas_2classes_2D(N / 2, c(4, 4), 0.5)
 xClass1_2 <- retlist[[1]]
 
-retlist <- gera_gaussianas_2classes_2D(N / 2, c(4, 0), 0.4)
+retlist <- gera_gaussianas_2classes_2D(N / 2, c(4, 0), 0.5)
 xClass2_1 <- retlist[[1]]
 
-retlist <- gera_gaussianas_2classes_2D(N / 2, c(0, 4), 0.4)
+retlist <- gera_gaussianas_2classes_2D(N / 2, c(0, 4), 0.5)
 xClass2_2 <- retlist[[1]]
 
 # cria a matriz X com todos os meus dados de entrada e a coluna de bias
 joinedClasses <- rbind(xClass1_1, xClass1_2, xClass2_1, xClass2_2)
-X <- matrix(cbind(rep(1, N), joinedClasses), nrow = 2 * N, ncol = 3)
+X <- matrix(joinedClasses, nrow = 2 * N, ncol = 2)
 
 # cria a matriz Y com todas as saidas esperadas
 # os primeiros N elementos da classe 1 são Y = 1 (eu defini isso)
@@ -62,16 +62,25 @@ plot(
   xlim = c(-2, 6)
 )
 
-points(Xtrain[, 2], Xtrain[, 3], lwd = 1, col = Ytraincolors)
+points(Xtrain[, 1], Xtrain[, 2], lwd = 1, col = Ytraincolors)
 
 # agora treina a rede RBF
 modRBF <- trainRBF(Xtrain, Ytrain, p)
-yhat <- YRBF(Xtrain, modRBF)
 
-# calcula a saida da rede para cada ponto do grid
-gridPoints <- 100
-xgrid <- seq(from = -2, to = 6, length.out = gridPoints)
-ygrid <- seq(from = -2, to = 6, length.out = gridPoints)
-Xvalid <- cbind(1, xgrid, ygrid)
+# joga esse modelo do conjunto de testes
+Yhat_test <- YRBF(Xtest, modRBF)
+
+totalOfTests <- length(Ytest)
+correctTests <- 0
+
+for (i in 1:totalOfTests) {
+  if (sign(Ytest[i]) == sign(Yhat_test[i])) {
+    correctTests <- correctTests + 1;
+  }
+}
+
+accuracy <- correctTests / totalOfTests
+print(accuracy)
+
 
 
