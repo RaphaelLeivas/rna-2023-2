@@ -32,7 +32,7 @@ y_train <- as.matrix(y_train, ncol = 1)
 x_test <- as.matrix(x_test, ncol = 1)
 y_test <- as.matrix(y_test, ncol = 1)
 
-# hiperparametros (argumentos) do treinamento
+# hiperparametros (argumentos) do treinamento da MLP
 maxepocas <- 50000
 tol <- 0.01
 eepoca <- tol + 1
@@ -40,6 +40,7 @@ nepocas <- 1
 eta <- 0.005
 
 for (iteration in 1:numberOfIterations) {
+  # treina a MLP
   mse <- 0
   
   # inicializa todos os pesos
@@ -128,7 +129,7 @@ for (iteration in 1:numberOfIterations) {
   }
   
   mse_list <- append(mse_list, mse / x_test_length)
-  
+
   # lines(x_test, yhat_list, col = "black", lwd = 2)
 }
 
