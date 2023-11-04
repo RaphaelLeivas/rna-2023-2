@@ -41,6 +41,7 @@ evec<-matrix(nrow=1,ncol=maxepocas)
 while ((nepocas < maxepocas) && (eepoca>tol))
 {
   ei2<-0
+  N <- dim(x_train)[1]
   xseq<-sample(length(y))       
   for (i in 1:length(y))
   {
@@ -85,7 +86,7 @@ while ((nepocas < maxepocas) && (eepoca>tol))
   }
   
   nepocas<-nepocas+1       
-  evec[nepocas]<-ei2
+  evec[nepocas]<-ei2 / N
   
   eepoca<-evec[nepocas]    
 }  

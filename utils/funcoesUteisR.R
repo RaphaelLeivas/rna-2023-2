@@ -22,6 +22,10 @@ sech2<-function(u)
   return(((2/(exp(u)+exp(-u)))*(2/(exp(u)+exp(-u)))))  
 }
 
+getRandomNumber <- function(min = 0, max = 1) {
+  return (runif(1, min = min, max = max)[1])
+}
+
 ###########################################
 #plotando as superfícies de contorno
 # plot(xc1[,1],xc1[,2],col="red",xlim=c(0,6),ylim=c(0,6))
