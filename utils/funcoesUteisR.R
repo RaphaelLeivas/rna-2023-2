@@ -17,6 +17,11 @@ gera_gaussianas_2classes_2D <- function(N,M,SD){
   return(retlist) 
 }
 
+sech2<-function(u)
+{
+  return(((2/(exp(u)+exp(-u)))*(2/(exp(u)+exp(-u)))))  
+}
+
 ###########################################
 #plotando as superfícies de contorno
 # plot(xc1[,1],xc1[,2],col="red",xlim=c(0,6),ylim=c(0,6))
