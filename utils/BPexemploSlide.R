@@ -3,6 +3,8 @@ rm(list = ls())
 
 source("C:\\dev\\rna-2023-2\\utils\\funcoesUteisR.R")
 
+set.seed(209)
+
 # geração dos dados
 s1<-0.3
 s2<-0.3
@@ -18,14 +20,13 @@ X= rbind(xc1,xc2)
 y = rbind(as.matrix(rep(-1, nc), ncol = nc), as.matrix(rep(1, nc), ncol = nc))
 
 # hiperparametros (argumentos) do treinamento
-maxepocas<-1000
-tol<-0.001
+maxepocas<-4000
+tol<-0.01
 eepoca<-tol+1
 nepocas<-1
-eta<-0.05
+eta<-0.1
 
 # inicializa todos os pesos
-# pesos n
 z10 = 1
 z12 = 1
 z11 = 1
@@ -48,7 +49,7 @@ while ((nepocas < maxepocas) && (eepoca>tol))
     x2<-X[irand,2]
     
     h1 = tanh(x1*z11 + x2*z12 + z10)
-    h2 = tanh(x2*z21 + x2*z21 + z20)
+    h2 = tanh(x1*z21 + x2*z22 + z20)
     
     yhat = tanh(h1*w31 + h2*w32 + w30)
     
@@ -65,7 +66,7 @@ while ((nepocas < maxepocas) && (eepoca>tol))
     dz11 = eta* de1 * x1
     dz12 = eta* de1 * x2
     
-    de2 = de3 * w32 * (sech2(x2*z21 + x2*z21 + z20))
+    de2 = de3 * w32 * (sech2(x1*z21 + x2*z22 + z20))
     dz20 = eta* de2 * 1
     dz21 = eta* de2 * x1
     dz22 = eta* de2 * x2
@@ -88,3 +89,35 @@ while ((nepocas < maxepocas) && (eepoca>tol))
   
   eepoca<-evec[nepocas]    
 }  
+
+# concluido o aprendizado, cria mais dados de teste
+xc1_t<-matrix(rnorm(nc*2),ncol=2)*s1 + t(matrix((c(2,2)),ncol=nc,nrow=2))
+xc2_t<-matrix(rnorm(nc*2),ncol=2)*s2 + t(matrix((c(4,4)),ncol=nc,nrow=2))
+x_t= rbind(xc1_t,xc2_t)
+y = rbind(as.matrix(rep(-1, nc), ncol = nc), as.matrix(rep(1, nc), ncol = nc))
+
+# calcula a saida da rede para esses dados de teste x_t
+xt_length <- dim(x_t)[1]
+correct <- 0
+yhat_list <- c()
+
+for (i in 1:xt_length) {
+  x1<-x_t[i,1]
+  x2<-x_t[i,2]
+  
+  h1 = tanh(x1*z11 + x2*z12 + z10)
+  h2 = tanh(x1*z21 + x2*z22 + z20)
+  
+  yhat = tanh(h1*w31 + h2*w32 + w30)
+  yhat_list <- append(yhat_list, yhat)
+  
+  if (sign(yhat) == sign(y[i])) {
+    correct <- correct + 1
+  }
+}
+
+print(correct / xt_length)
+
+
+
+
