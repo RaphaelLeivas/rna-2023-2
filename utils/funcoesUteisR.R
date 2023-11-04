@@ -23,7 +23,7 @@ sech2<-function(u)
 }
 
 getRandomNumber <- function(min = 0, max = 1) {
-  return (runif(1, min = min, max = max)[1])
+  return (runif(1, min = min, max = max)[1]) - 0.5
 }
 
 ###########################################

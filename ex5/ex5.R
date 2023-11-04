@@ -12,14 +12,14 @@ i <- sample(length(x_train))
 x_train <- x_train[i]
 y_train <- sin(x_train)
 y_train <- y_train + (runif(length(y_train)) - 0.5) / 5
-plot(x_train, y_train, col = "blue", xlim = c(0, 2 * pi), ylim = c(-1, 1), xlab = "x", ylab = "y")
+plot(x_train, y_train, col = "blue", xlim = c(0, 2 * pi), ylim = c(-1.25, 1.25), xlab = "x", ylab = "y")
 
 # geração dos dados de teste
 x_test <- seq(from = 0, to = 2 * pi, by = 0.01)
 y_test <- sin(x_test)
 par(new = T)
-plot(x_test, y_test, col = "red", type = "l", xlim = c(0, 2 * pi), ylim = c(-1, 1), xlab = "x", ylab = "y")
-legend(x = 4, y = 1, legend = c("train", "test", "model"), col = c("blue", "red", "black"), pch = c("o", "_", "_"))
+lines(x_test, y_test, col = "red", lwd = 2)
+legend(x = 4, y = 1.25, legend = c("train", "test", "model"), col = c("blue", "red", "black"), pch = c("o", "_", "_"))
 
 # dados de treinamento são 42 observações de apenas uma variável: só tem uma dimensão
 # a saída também só tem uma dimensão
@@ -30,11 +30,11 @@ x_test <- as.matrix(x_test, ncol = 1)
 y_test <- as.matrix(y_test, ncol = 1)
 
 # hiperparametros (argumentos) do treinamento
-maxepocas <- 5000
+maxepocas <- 50000
 tol <- 0.01
 eepoca <- tol + 1
 nepocas <- 1
-eta <- 0.1
+eta <- 0.005
 
 # inicializa todos os pesos
 z10 <- getRandomNumber()
