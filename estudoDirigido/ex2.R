@@ -1,14 +1,24 @@
 rm(list = ls())
 dev.off()
 
+# calcula a saida da rede para uma entrada
+Ymlp <- function(x1, x2) {
+  h1 <- tanh(x1 * z11 + x2 * z12 + z10)
+  h2 <- tanh(x1 * z21 + x2 * z22 + z20)
+  h3 <- tanh(x1 * z31 + x2 * z32 + z30)
+  
+  yhat <- h1 * w41 + h2 * w42 + h3 * w43 + w40
+  
+  return (sign(yhat)) # usa se é positivo ou negativo (limiar de ativação)
+}
+
 source("C:\\dev\\rna-2023-2\\utils\\rbf.R")
 source("C:\\dev\\rna-2023-2\\utils\\funcoesUteisR.R")
 
-set.seed(203)
+set.seed(315)
 
-numberOfSimulations <- 1
+numberOfSimulations <- 10
 accArray <- c()
-modRBFarray <- list()
 
 N <- 240 # numero de amostras de cada classe
 n <- 2 # dimensao do espaço de entrada
@@ -41,7 +51,7 @@ for (y in Y) {
   i <- i + 1
 }
 
-# 90% do conjunto de dados de entrada vira treinamento, o resto teste
+# 70% do conjunto de dados de entrada vira treinamento, o resto teste
 dataset <- cbind(X, Y)
 sample <- sample(c(TRUE, FALSE), nrow(dataset), replace = TRUE, prob = c(0.7, 0.3))
 Xtrain <- dataset[sample, 1:n]
@@ -58,7 +68,7 @@ for (y in Ytrain) {
 
 plot(
   NULL,
-  main = "Classificação via RBF",
+  main = "Classificação via MLP",
   xlab = "x1",
   ylab = "x2",
   ylim = c(-2, 6),
@@ -67,16 +77,13 @@ plot(
 
 points(Xtrain[, 1], Xtrain[, 2], lwd = 2, col = Ytraincolors)
 
-# hiperparametros (argumentos) do treinamento da MLP
-maxepocas <- 1000
-tol <- 0.01
-eepoca <- tol + 1
-nepocas <- 1
-eta <- 0.01
-
 for (sim in 1:numberOfSimulations) {
-  # treina a MLP
-  mse <- 0
+  # hiperparametros (argumentos) do treinamento da MLP
+  maxepocas <- 500
+  tol <- 0.01
+  eepoca <- tol + 1
+  nepocas <- 1
+  eta <- 0.01
   
   # inicializa todos os pesos
   # primeiro neuronio
@@ -166,37 +173,24 @@ for (sim in 1:numberOfSimulations) {
   
   # concluido o treinamento, agora é testar com os dados de teste
   # calcula a saida da rede
+
+  correct <- 0
+  Xtest_length <- dim(Xtest)[1]
+  for (i in 1:Xtest_length) {
+    yhat <- Ymlp(Xtest[i, 1], Xtest[i, 2])
+    if (yhat == Ytest[i]) {
+      correct <- correct + 1
+    } 
+  }
   
-  # yhat_list <- c()
-  # x_test_length <- length(x_test)
-  # for (i in 1:x_test_length) {
-  #   x1 <- x_test[i, 1]
-  #   
-  #   h1 <- tanh(x1 * z11 + z10)
-  #   h2 <- tanh(x1 * z21 + z20)
-  #   h3 <- tanh(x1 * z31 + z30)
-  #   
-  #   yhat <- h1 * w41 + h2 * w42 + h3 * w43 + w40
-  #   mse <- mse + (y_test[i] - yhat)^2
-  # }
+  accArray[sim] <- correct / Xtest_length
 }
 
-# averageAccuracy <- mean(accArray)
-# standardDeviation <- sd(accArray)
-# 
-# msg <- paste(averageAccuracy, " +- ", standardDeviation)
-# print(msg)
+averageAccuracy <- mean(accArray)
+standardDeviation <- sd(accArray)
 
-# calcula a saida da rede para uma entrada
-Ymlp <- function(x1, x2) {
-  h1 <- tanh(x1 * z11 + x2 * z12 + z10)
-  h2 <- tanh(x1 * z21 + x2 * z22 + z20)
-  h3 <- tanh(x1 * z31 + x2 * z32 + z30)
-  
-  yhat <- h1 * w41 + h2 * w42 + h3 * w43 + w40
-  
-  return (sign(yhat)) # usa se é positivo ou negativo (limiar de ativação)
-}
+msg <- paste(averageAccuracy, " +- ", standardDeviation)
+print(msg)
 
 gridPoints <- 100
 xgrid <- seq(from = -2, to = 6, length.out = gridPoints)
@@ -222,7 +216,7 @@ filled.contour(xgrid, ygrid, M, nlevels = 0, lwd = 1, lty = 1, xlab = "x1", ylab
                  axis(1)
                  axis(2)
                  contour(xgrid, ygrid, M, nlevels = 0, add = TRUE)
-                 points(Xtest[,1], Xtest[,2], lwd = 2, col = Ygridcolors)
+                 points(Xtrain[,1], Xtrain[,2], lwd = 2, col = Ytraincolors)
                })
 
 
