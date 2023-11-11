@@ -6,10 +6,10 @@ source("C:\\dev\\rna-2023-2\\utils\\funcoesUteisR.R")
 set.seed(203)
 
 mse_list <- c()
-numberOfIterations = 5
+numberOfIterations = 1
 
 # geração dos dados de treinamento
-x_train <- seq(from = 0, to = 2 * pi, by = 0.15)
+x_train <- seq(from = 0, to = 3 * pi, by = 0.15)
 x_train <- x_train + (runif(length(x_train)) - 0.5) / 5
 i <- sample(length(x_train))
 x_train <- x_train[i]
@@ -18,7 +18,7 @@ y_train <- y_train + (runif(length(y_train)) - 0.5) / 5
 plot(x_train, y_train, col = "blue", xlim = c(0, 2 * pi), ylim = c(-1.25, 1.25), xlab = "x", ylab = "y")
 
 # geração dos dados de teste
-x_test <- seq(from = 0, to = 2 * pi, by = 0.01)
+x_test <- seq(from = 0, to = 3 * pi, by = 0.01)
 y_test <- sin(x_test)
 par(new = T)
 lines(x_test, y_test, col = "red", lwd = 2)
@@ -125,14 +125,14 @@ for (iteration in 1:numberOfIterations) {
     h3 <- tanh(x1 * z31 + z30)
     
     yhat <- h1 * w41 + h2 * w42 + h3 * w43 + w40
+    yhat_list <- append(yhat_list, yhat)
     mse <- mse + (y_test[i] - yhat)^2
   }
   
   mse_list <- append(mse_list, mse / x_test_length)
-
-  # lines(x_test, yhat_list, col = "black", lwd = 2)
 }
 
+lines(x_test, yhat_list, col = "black", lwd = 2)
 
 average_mse <- mean(mse_list)
 sd_mse <- sd(mse_list)

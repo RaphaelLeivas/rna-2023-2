@@ -1,5 +1,5 @@
 rm(list = ls())
-dev.off()
+# dev.off()
 
 # calcula a saida da rede para uma entrada
 Ymlp <- function(x1, x2) {
