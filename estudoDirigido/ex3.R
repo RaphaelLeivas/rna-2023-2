@@ -27,12 +27,12 @@ for (sim in 1:numberOfIterations) {
   Ytrain <- data2[sample, ncol(data2)]
   Ytest <- data2[!sample, ncol(data2)]
 
-  # converte para -1 (maligno) e 1 (benigno)
+  # converte para 0 (maligno) e 1 (benigno)
   for (i in 1:length(Ytrain)) {
     if (Ytrain[i] == "benign") {
       Ytrain[i] <- 1
     } else {
-      Ytrain[i] <- -1
+      Ytrain[i] <- 0
     }
   }
 
@@ -40,7 +40,7 @@ for (sim in 1:numberOfIterations) {
     if (Ytest[i] == "benign") {
       Ytest[i] <- 1
     } else {
-      Ytest[i] <- -1
+      Ytest[i] <- 0
     }
   }
 
@@ -64,7 +64,11 @@ for (sim in 1:numberOfIterations) {
   correct <- 0
   N_test <- length(Ytest)
   for (i in 1:N_test) {
-    if (sign(yhat_test[i]) == sign(Ytest[i])) {
+    # a rede calcula um valor entre 0 e 1. 
+    # se esta mais proximo de 0, ela diz que é malgino
+    # se esta mais proximo de 1, ela diz que é benigno
+    # usa round para arrendondar para 0 ou 1
+    if (round(yhat_test[i]) == Ytest[i]) {
       correct <- correct + 1
     }
   }
