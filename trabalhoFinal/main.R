@@ -1,6 +1,8 @@
 rm(list = ls())
 # dev.off()
 
+library("RSNNS")
+
 set.seed(203)
 
 trainReduzidoPath <- "C:\\dev\\rna-2023-2\\trabalhoFinal\\datasets\\trainReduzido.csv"
@@ -24,10 +26,10 @@ Xtrain <- Xtrain[selectedRows,]
 Xvalid <- validacao[, 2:785]
 
 # chama a rede 
-rede<-mlp(Xtrain, Ytrain, size=c(3, 3), maxit=1000, initFunc="Randomize_Weights",
+rede<-mlp(Xtrain, Ytrain, size=c(10, 10), maxit=1000, initFunc="Randomize_Weights",
           initFuncParams=c(-0.3, 0.3), learnFunc="Rprop",
           learnFuncParams=c(0.1, 0.1), updateFunc="Topological_Order",
           updateFuncParams=c(0), hiddenActFunc="Act_TanH",
-          shufflePatterns=TRUE, linOut=TRUE)
+          shufflePatterns=TRUE, linOut = TRUE)
 
-yhat <- predict(rede, Xvalid)
+yhat <- predict(rede, Xtrain)
