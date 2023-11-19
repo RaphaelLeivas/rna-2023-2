@@ -13,17 +13,17 @@ validacao <- read.csv(file = validacaoPath, header = T)
 
 # separa as saidas esperadas de cada observação
 Ytrain <- trainReduzido[, "label"]
-Xtrain <- trainReduzido[, 3:786]
+Xtrain <- trainReduzido[, 3:786] / 255
 
 # seleciona só uma parte para treinamento, o dataset de entrada é grande demais
-percentage <- 0.05
+percentage <- 0.2
 N <- dim(Xtrain)[1] # numero de observacoes de treinamento
 selectedRows <- sample(1:N, size = percentage * N)
 Ytrain <- Ytrain[selectedRows]
 Xtrain <- Xtrain[selectedRows,]
 
 # dados de validacao
-Xvalid <- validacao[, 2:785]
+Xvalid <- validacao[, 2:785] / 255
 
 # chama a rede 
 rede<-mlp(Xtrain, Ytrain, size=c(10, 10), maxit=1000, initFunc="Randomize_Weights",
@@ -32,4 +32,8 @@ rede<-mlp(Xtrain, Ytrain, size=c(10, 10), maxit=1000, initFunc="Randomize_Weight
           updateFuncParams=c(0), hiddenActFunc="Act_TanH",
           shufflePatterns=TRUE, linOut = TRUE)
 
-yhat <- predict(rede, Xtrain)
+yhat <- predict(rede, Xvalid)
+
+# print(cbind(round(yhat), Ytrain))
+
+
