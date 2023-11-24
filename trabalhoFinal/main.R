@@ -1,4 +1,4 @@
-rm(list = ls())
+# rm(list = ls())
 # dev.off()
 
 library("RSNNS")
@@ -7,47 +7,73 @@ set.seed(203)
 
 trainReduzidoPath <- "C:\\dev\\rna-2023-2\\trabalhoFinal\\datasets\\trainReduzido.csv"
 validacaoPath <- "C:\\dev\\rna-2023-2\\trabalhoFinal\\datasets\\validacao.csv"
+mlpSubmissionPath <- "C:\\dev\\rna-2023-2\\trabalhoFinal\\datasets\\submissionMlp.csv"
 
 trainReduzido <- read.csv(file = trainReduzidoPath, header = T)
 validacao <- read.csv(file = validacaoPath, header = T)
 
+# schuffle inicial nos dados, por linha
+trainReduzido <- trainReduzido[sample(1:nrow(trainReduzido)), ]
+
 # separa as saidas esperadas de cada observação
-Ytrain <- trainReduzido[, "label"]
-Xtrain <- trainReduzido[, 3:786] / 255
+rotulos <- trainReduzido[, "label"]
+dados <- trainReduzido[, 3:786] / 255
 
-# seleciona só uma parte para treinamento, o dataset de entrada é grande demais
-percentage <- 0.80
-N <- dim(Xtrain)[1] # numero de observacoes de treinamento
+# numero de folds
+numFolds <- 5
 
-sample <- sample(c(TRUE, FALSE), nrow(Xtrain), replace = TRUE, prob = c(percentage, 1 - percentage))
-Xtest <- Xtrain[!sample,]
-Xtrain <- Xtrain[sample,]
-Ytest <- Ytrain[!sample]
-Ytrain <- Ytrain[sample]
+# separa os dados em folds
+rowIndices <- 1:nrow(trainReduzido)
+folds <- split(rowIndices, sample(1:length(rowIndices), size = numFolds))
 
-# selectedRows <- sample(1:N, size = percentage * N)
-# Ytrain <- Ytrain[selectedRows]
-# Xtrain <- Xtrain[selectedRows,]
+# accArray <- c()
+# for (f in 1:numFolds) {
+#   Xtrain = dados[-folds[[f]],]
+#   Ytrain = rotulos[-folds[[f]]]
+#   Xtest = dados[folds[[f]],]
+#   Ytest = rotulos[folds[[f]]]
+#   
+#   # chama a rede 
+#   rede<-mlp(Xtrain, Ytrain, size=c(10, 10), maxit=500, initFunc="Randomize_Weights",
+#             initFuncParams=c(-0.3, 0.3), learnFunc="Rprop",
+#             learnFuncParams=c(0.1, 0.1), updateFunc="Topological_Order",
+#             updateFuncParams=c(0), hiddenActFunc="Act_Logistic", linOut = TRUE,
+#             shufflePatterns=TRUE)
+#   
+#   yhat <- predict(rede, Xtest)
+#   
+#   # calcula a acuracia de classificação da rede
+#   correct <- 0
+#   for (i in 1:length(Ytest)) {
+#     if (round(yhat[i]) == Ytest[i]) {
+#       correct <- correct + 1
+#     }
+#   }
+#   
+#   accArray <- append(accArray, correct / length(Ytest))
+# }
+
+# barplot(accArray * 100,
+#         main = "Acurácia por iteração",
+#         xlab = "Iteração",
+#         ylab = "Acurácia (%)",
+#         names.arg = c("1", "2", "3", "4", "5"),
+#         ylim=c(0,100),
+#         col = "green")
+# 
+# msg1 <- paste(mean(accArray), " +- ", sd(accArray))
+# msg2 <- paste("Max: ", max(accArray))
+# print(msg1)
+# print(msg2)
 
 # dados de validacao
 Xvalid <- validacao[, 2:785] / 255
 
-# chama a rede 
-rede<-mlp(Xtrain, Ytrain, size=c(10, 10), maxit=500, initFunc="Randomize_Weights",
-          initFuncParams=c(-0.3, 0.3), learnFunc="Rprop",
-          learnFuncParams=c(0.1, 0.1), updateFunc="Topological_Order",
-          updateFuncParams=c(0), hiddenActFunc="Act_Logistic", linOut = TRUE,
-          shufflePatterns=TRUE)
+Yvalid <- predict(rede, Xvalid)
+Yvalid <- round(Yvalid)
 
-yhat <- predict(rede, Xtest)
+df <- data.frame(ImageId = 1:4000,
+                 Label = Yvalid
+)
 
-# calcula a acuracia de classificação da rede
-correct <- 0
-for (i in 1:length(Ytest)) {
-  if (round(yhat[i]) == Ytest[i]) {
-    correct <- correct + 1
-  }
-}
-
-print(correct / length(Ytest))
-
+write.csv(df, mlpSubmissionPath, row.names=FALSE)
